@@ -69,18 +69,7 @@ pub mod dao {
         against_votes: u8,
     }
 
-    #[derive(Encode, Decode)]
-    #[cfg_attr(
-        feature = "std",
-        derive(
-            Debug,
-            PartialEq,
-            Eq,
-            scale_info::TypeInfo,
-            ink::storage::traits::StorageLayout
-        )
-    )]
-    pub struct ProposalId(u64);
+    pub type ProposalId = u64;
 
     #[ink(storage)]
     pub struct Governor {
@@ -124,8 +113,7 @@ pub mod dao {
                 amount,
             };
 
-            self.proposals
-                .insert(ProposalId(self.total_proposals), &proposal);
+            self.proposals.insert(self.total_proposals, &proposal);
             self.proposals_vote
                 .insert(proposal, &ProposalVote::default());
             self.total_proposals += 1;
@@ -254,7 +242,7 @@ pub mod dao {
             );
             let result = governor.propose(accounts.django, 100, 1);
             assert_eq!(result, Ok(()));
-            let proposal = governor.get_proposal(ProposalId(0)).unwrap();
+            let proposal = governor.get_proposal(0).unwrap();
             let now = governor.now();
             assert_eq!(
                 proposal,
@@ -274,7 +262,7 @@ pub mod dao {
             let mut governor = create_contract(1000);
             let result = governor.propose(AccountId::from([0x02; 32]), 100, 1);
             assert_eq!(result, Ok(()));
-            let execute = governor.execute(ProposalId(0));
+            let execute = governor.execute(0);
             assert_eq!(execute, Err(GovernorError::QuorumNotReached));
         }
     }

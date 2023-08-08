@@ -4,10 +4,10 @@
 
 #[openbrush::implementation(
     PSP22,
-    PSP22Burnable,
+   // PSP22Burnable,
     PSP22Mintable,
     PSP22Metadata,
-    PSP22Capped
+   // PSP22Capped
 )]
 #[openbrush::contract]
 pub mod my_psp22 {
@@ -32,8 +32,12 @@ pub mod my_psp22 {
             decimal: u8,
         ) -> Self {
             let mut _instance = Self::default();
-            psp22::Internal::_mint(&mut _instance, Self::env().caller(), initial_supply)
-                .expect("Should mint");
+            psp22::Internal::_mint_to(
+                &mut _instance,
+                Self::env().caller(),
+                initial_supply,
+            )
+            .expect("Should mint");
             _instance.metadata.name.set(&name);
             _instance.metadata.symbol.set(&symbol);
             _instance.metadata.decimals.set(&decimal);
